@@ -24,6 +24,7 @@
   <modules>
     <module>infinispan</module>
     <module>manager</module>
+    <module>postgres</module>
   </modules>
 
   <dependencyManagement>

@@ -27,7 +27,11 @@ public class MySQLResources implements QuarkusTestResourceLifecycleManager {
             .withExposedPorts(MySQLContainer.MYSQL_PORT)
             .withFileSystemBind(HOST_TMP, CONTAINER_DATA_DIR, BindMode.READ_WRITE)
             .withCopyFileToContainer(MountableFile.forClasspathResource("setup.sql"), "/docker-entrypoint-initdb.d/setup.sql");
-      db.start();
+      try {
+         db.start();
+      } catch (Throwable t) {
+         System.out.println(db.getLogs());
+      }
 
       Map<String, String> properties = new HashMap<>( Map.of(
             "quarkus.datasource.db-kind", "MYSQL",
