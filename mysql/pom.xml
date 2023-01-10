@@ -10,12 +10,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>cache-manager-postgres</artifactId>
-    <name>Gingersnap Cache Manager:: Cache Manager Postgres</name>
+    <artifactId>cache-manager-mysql</artifactId>
+    <name>Gingersnap Cache Manager:: Cache Manager MySQL</name>
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-reactive-pg-client</artifactId>
+            <artifactId>quarkus-reactive-mysql-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.gingersnap-project</groupId>
@@ -47,12 +47,12 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
+            <artifactId>mysql</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -2,11 +2,9 @@ package io.gingersnapproject.metrics;
 
 import io.gingersnapproject.metrics.micrometer.PerRuleGaugeMetric;
 import io.gingersnapproject.metrics.micrometer.PerRuleTimerMetric;
-import io.gingersnapproject.mysql.MySQLResources;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.config.NamingConvention;
 import io.micrometer.prometheus.PrometheusNamingConvention;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matcher;
@@ -17,16 +15,14 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.gingersnapproject.metrics.micrometer.CacheManagerMicrometerMetrics.COMPONENT_KEY;
-import static io.gingersnapproject.metrics.micrometer.CacheManagerMicrometerMetrics.COMPONENT_NAME;
-import static io.gingersnapproject.metrics.micrometer.CacheManagerMicrometerMetrics.RULE_KEY;
-import static io.gingersnapproject.mysql.MySQLResources.RULE_NAME;
+import static io.gingersnapproject.metrics.micrometer.CacheManagerMicrometerMetrics.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
 
 @QuarkusTest
-@QuarkusTestResource(MySQLResources.class)
-public class MetricsResourceTest {
+public abstract class MetricsResourceTest {
+
+   private static final String RULE_NAME = "us-east";
 
    private static final String GET_PATH = "/rules/{rule}/{key}";
    // prometheus naming for testing!
