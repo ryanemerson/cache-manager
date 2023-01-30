@@ -1,0 +1,107 @@
+name: Build Images
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ${{ github.ref }}
+      repository:
+        type: string
+        default: ${{ github.repository }}
+      tag:
+        type: string
+        default: latest
+    outputs:
+      image-names:
+        description: The names of the created image files
+        value: ${{ jobs.cache-manager-images.outputs.names }}
+      image-tag:
+        description: The tag of the created image files
+        value: ${{ jobs.cache-manager-images.outputs.tag }}
+
+jobs:
+  cache-manager-images:
+    runs-on: ubuntu-latest
+
+    outputs:
+      names: ${{ steps.meta.outputs.names }}
+      tag: ${{ steps.meta.outputs.tag }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+          repository: ${{ inputs.repository }}
+
+      - id: meta
+        run: |
+          echo "names='mysql postgres mssql oracle'" >> $GITHUB_OUTPUT
+          echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build MySQL
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: manager/src/main/docker/Dockerfile.native-micro-builder
+          tags: quay.io/gingersnap/cache-manager-mysql:${{ inputs.tag }}
+          outputs: type=docker,dest=/tmp/mysql.tar
+          build-args: |
+            DB_VENDOR=mysql
+
+      - name: Build Postgres
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: manager/src/main/docker/Dockerfile.native-micro-builder
+          tags: quay.io/gingersnap/cache-manager-postgres:${{ inputs.tag }}
+          outputs: type=docker,dest=/tmp/postgres.tar
+          build-args: |
+            DB_VENDOR=postgres
+
+      - name: Build MSSQL
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: manager/src/main/docker/Dockerfile.native-micro-builder
+          tags: quay.io/gingersnap/cache-manager-mssql:${{ inputs.tag }}
+          outputs: type=docker,dest=/tmp/mssql.tar
+          build-args: |
+            DB_VENDOR=mssql
+
+      - name: Build Oracle
+        uses: docker/build-push-action@v3
+        with:
+          file: manager/src/main/docker/Dockerfile.native-micro-builder
+          push: true
+          tags: quay.io/gingersnap/cache-manager-oracle:${{ inputs.tag }}
+          outputs: type=docker,dest=/tmp/oracle.tar
+          build-args: |
+            DB_VENDOR=oracle
+
+      - name: Upload MySQL
+        uses: actions/upload-artifact@v3
+        with:
+          name: mysql
+          path: /tmp/mysql.tar
+
+      - name: Upload Postgres
+        uses: actions/upload-artifact@v3
+        with:
+          name: postgres
+          path: /tmp/postgres.tar
+
+      - name: Upload MSSQL
+        uses: actions/upload-artifact@v3
+        with:
+          name: mssql
+          path: /tmp/mssql.tar
+
+      - name: Upload Oracle
+        uses: actions/upload-artifact@v3
+        with:
+          name: oracle
+          path: /tmp/oracle.tar
