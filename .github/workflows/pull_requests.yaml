@@ -15,7 +15,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: graalvm/setup-graalvm@v1
         with:
@@ -67,3 +67,10 @@ jobs:
         with:
           name: mssql-test-results
           path: ${{ env.TEST_OUTPUT_DIR }}
+
+  e2e:
+    needs: build
+    uses: ryanemerson/gingersnap-test/.github/workflows/e2e.yaml@test_dev
+    with:
+      cache-manager-ref: ${{ github.ref }}
+      cache-manager-repository: ${{ github.repository }}

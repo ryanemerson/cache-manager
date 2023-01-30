@@ -1,0 +1,37 @@
+name: Publish Images
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        default: latest
+
+jobs:
+  images:
+    uses: ./.github/workflows/build-images.yaml
+    with:
+      tag: ${{ input.tag }}
+
+  upload:
+    needs: image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+
+      - name: Login to Quay
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
+
+      - name: Load and Push images
+        # Use same tag value as passed to image job
+        run: |
+          for i in ${{ needs.image.outputs.image-names }}; do \
+            docker load --input $i \
+            docker push quay.io/gingersnap/$i:${{ needs.images.outputs.image-tag }} \
+          done
