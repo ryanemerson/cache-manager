@@ -27,16 +27,7 @@ public class PostgreSQLVendor implements Vendor {
             prepareQuery(pool, "select constraint_name, column_name from information_schema.key_column_usage where table_name = '$1' and constraint_name in (select constraint_name from information_schema.table_constraints where table_name = '$2' and constraint_type='PRIMARY KEY') order by ordinal_position")
                   .execute(Tuple.of(table, table))
                   .onFailure().invoke(t -> log.error("Error retrieving primary key from " + table, t))
-                  .map(rs -> {
-                     String pkName = null;
-                     List<String> pkColumns = new ArrayList<>(2);
-                     for (RowIterator<Row> i = rs.iterator(); i.hasNext(); ) {
-                        Row row = i.next();
-                        pkName = row.getString(0);
-                        pkColumns.add(row.getString(1));
-                     }
-                     return new PrimaryKey(pkName, pkColumns);
-                  });
+                  .map(Vendor::extractPrimaryKey);
       Uni<List<ForeignKey>> fksUni =
             prepareQuery(pool, "select kcu.constraint_name, kcu.column_name, ccu.table_name as ref_table, ccu.column_name as ref_column from information_schema.key_column_usage kcu, information_schema.constraint_column_usage ccu where kcu.constraint_name=ccu.constraint_name and kcu.table_name = '$1' and kcu.constraint_name in (select constraint_name from information_schema.table_constraints where table_name = '$2' and constraint_type='FOREIGN KEY') order by kcu.ordinal_position")
                   .execute(Tuple.of(table, table))
@@ -52,10 +43,10 @@ public class PostgreSQLVendor implements Vendor {
                         String newFkName = row.getString(0);
                         if (fkName != null && !newFkName.equals(fkName)) {
                            foreignKeys.add(new ForeignKey(fkName, columns, fkTable, fkColumns));
-                           fkName = newFkName;
                            columns = new ArrayList<>(2);
                            fkColumns = new ArrayList<>(2);
                         }
+                        fkName = newFkName;
                         fkTable = row.getString(1);
                         columns.add(row.getString(2));
                         fkColumns.add(row.getString(3));

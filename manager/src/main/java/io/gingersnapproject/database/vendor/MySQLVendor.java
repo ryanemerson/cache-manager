@@ -28,16 +28,7 @@ public class MySQLVendor implements Vendor {
             prepareQuery(pool, "select constraint_name, column_name from information_schema.key_column_usage where table_name = ? and constraint_name in (select constraint_name from information_schema.table_constraints where table_name = ? and constraint_type='PRIMARY KEY') order by ordinal_position")
                   .execute(Tuple.of(table, table))
                   .onFailure().invoke(t -> log.error("Error retrieving primary key from " + table, t))
-                  .map(rs -> {
-                     String pkName = null;
-                     List<String> pkColumns = new ArrayList<>(2);
-                     for (RowIterator<Row> i = rs.iterator(); i.hasNext(); ) {
-                        Row row = i.next();
-                        pkName = row.getString(0);
-                        pkColumns.add(row.getString(1));
-                     }
-                     return new PrimaryKey(pkName, pkColumns);
-                  });
+                  .map(Vendor::extractPrimaryKey);
       Uni<List<ForeignKey>> fksUni =
             prepareQuery(pool, "select constraint_name, referenced_table_name, column_name, referenced_column_name from information_schema.key_column_usage where table_name = ? and constraint_name in (select constraint_name from information_schema.table_constraints\n" +
                   " where table_name = ? and constraint_type='FOREIGN KEY') order by constraint_name, ordinal_position")

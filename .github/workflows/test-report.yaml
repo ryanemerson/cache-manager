@@ -28,3 +28,10 @@ jobs:
           name: MSSQL Tests
           path: '**/*.xml'
           reporter: java-junit
+
+      - uses: dorny/test-reporter@v1
+        with:
+          artifact: oracle-test-results
+          name: Oracle Tests
+          path: '**/*.xml'
+          reporter: java-junit

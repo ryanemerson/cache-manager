@@ -2,6 +2,7 @@ package io.gingersnapproject.database;
 
 import io.gingersnapproject.mssql.MSSQLServerResources;
 import io.gingersnapproject.mysql.MySQLResources;
+import io.gingersnapproject.oracle.OracleResource;
 import io.gingersnapproject.postgres.PostgresResources;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
@@ -23,6 +24,7 @@ public class DatabaseResourcesLifecyleManager implements QuarkusTestResourceLife
         switch (dbKind) {
             case "postgresql" -> db = new PostgresResources();
             case "mssql" -> db = new MSSQLServerResources();
+            case "oracle" -> db = new OracleResource();
             default -> db = new MySQLResources();
         }
     }
@@ -48,6 +50,10 @@ public class DatabaseResourcesLifecyleManager implements QuarkusTestResourceLife
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean isOracle() {
+        return "oracle".equals(System.getProperty("quarkus.datasource.db-kind"));
     }
 
     public interface Database {

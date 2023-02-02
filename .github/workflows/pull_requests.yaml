@@ -67,3 +67,15 @@ jobs:
         with:
           name: mssql-test-results
           path: ${{ env.TEST_OUTPUT_DIR }}
+
+      - name: Build and test Oracle
+        run: |
+          mvn clean package -Pnative -Poracle
+          mvn test -Pintegration -Poracle
+
+      - name: Oracle Test Logs
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: oracle-test-results
+          path: ${{ env.TEST_OUTPUT_DIR }}

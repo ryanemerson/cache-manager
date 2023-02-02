@@ -42,16 +42,7 @@ public class MSSQLVendor implements Vendor {
                 prepareQuery(pool, pkSQL)
                         .execute(Tuple.of(table))
                         .onFailure().invoke(t -> log.error("Error retrieving primary key from " + table, t))
-                        .map(rs -> {
-                            String pkName = null;
-                            List<String> pkColumns = new ArrayList<>(2);
-                            for (RowIterator<Row> i = rs.iterator(); i.hasNext(); ) {
-                                Row row = i.next();
-                                pkName = row.getString(0);
-                                pkColumns.add(row.getString(1));
-                            }
-                            return new PrimaryKey(pkName, pkColumns);
-                        });
+                        .map(Vendor::extractPrimaryKey);
 
         String fkSQL =
                 "SELECT\n" +

@@ -51,9 +51,10 @@ public class DatabaseHandler {
       tables = configuration.rules().values().stream()
             .map(rule -> vendor.describeTable(pool, rule.connector().table()).await().indefinitely())
             .filter(Objects::nonNull)
-            .collect(Collectors.toMap(t -> t.name(), Function.identity()));
+            .collect(Collectors.toMap(Table::name, Function.identity()));
+      log.info("Tables information: {}", tables.values());
       table2rule = configuration.rules().entrySet().stream()
-            .collect(Collectors.toMap(t -> t.getValue().connector().table(), t -> t.getKey()));
+            .collect(Collectors.toMap(t -> t.getValue().connector().table(), Map.Entry::getKey));
    }
 
    public Uni<String> select(String rule, String key) {

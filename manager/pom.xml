@@ -111,6 +111,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>oracle-xe</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc11</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-client-hotrod</artifactId>
             <version>${version.infinispan}</version>
@@ -155,6 +165,18 @@
                 <dependency>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-reactive-pg-client</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>oracle</id>
+            <properties>
+                <quarkus.datasource.db-kind>oracle</quarkus.datasource.db-kind>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-reactive-oracle-client</artifactId>
                 </dependency>
             </dependencies>
         </profile>
