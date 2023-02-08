@@ -1,21 +1,21 @@
 package io.gingersnapproject.rules;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.containsString;
-
 import io.gingersnapproject.database.DatabaseResourcesLifecyleManager;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 import org.infinispan.client.hotrod.DataFormat;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.commons.dataconversion.MediaType;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 
 @QuarkusTest
 @QuarkusTestResource(value = DatabaseResourcesLifecyleManager.class)
@@ -40,7 +40,7 @@ public class JoinTest {
             .withDataFormat(DataFormat.builder().keyType(MediaType.TEXT_PLAIN).valueType(MediaType.TEXT_PLAIN).build());
    }
 
-   @AfterEach
+   @AfterAll
    public void afterAll() {
       if (cm != null) {
          cm.stop();
@@ -49,7 +49,6 @@ public class JoinTest {
       cm = null;
       cache = null;
    }
-
 
    @Test
    public void testJoin() throws Exception {
@@ -61,5 +60,11 @@ public class JoinTest {
       given().queryParam("query", "select * from flight where name = 'BA0666' order by scheduled_time")
             .when().get(RULE_PATH)
             .then().body(containsString("hitCount=1"));
+   }
+
+   @Test
+   public void testValueWithNoForeignKey() {
+      cache.put("3", "{\"name\":\"BA0666\", \"scheduled_time\":\"12:00:00\"}");
+      given().when().get(GET_PATH, "flight", "3").then().body(not(containsString("British Airways")));
    }
 }
