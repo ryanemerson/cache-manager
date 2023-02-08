@@ -69,7 +69,8 @@ public class Caches {
 
    public Uni<String> denormalizedPut(String name, String key, String value) {
       EagerRule rule = ruleManager.eagerRules().get(name);
-      if (rule!=null && rule.expandEntity()) {
+      if (rule != null && rule.expandEntity()) {
+         boolean denormalize = false;
          Table table = databaseHandler.table(rule.connector().table());
          if (!table.foreignKeys().isEmpty()) {
             // We have foreign keys to resolve
@@ -77,14 +78,21 @@ public class Caches {
             UniJoin.Builder<Object> builder = Uni.join().builder();
             for (ForeignKey fk : table.foreignKeys()) {
                // TODO: handle composite fks
-               Json fkJson = json.atDel(fk.columns().get(0));
+               String fkColumn = fk.columns().get(0);
+               if (json.at(fkColumn) == null)
+                  continue;
+
+               Json fkJson = json.atDel(fkColumn);
                if (fkJson != null) {
+                  denormalize = true;
                   String fkId = fkJson.asString();
                   String fkRule = databaseHandler.tableToRuleName(fk.refTable());
                   builder.add(getOrCreateMap(fkRule).get(fkId).map(Json::read).map(j -> json.set(fkRule, j)));
                }
             }
-            return builder.joinAll().andFailFast().chain(() -> put(name, key, json.toString()));
+
+            if (denormalize)
+               return builder.joinAll().andFailFast().chain(() -> put(name, key, json.toString()));
          }
       }
       // Nothing to denormalize
