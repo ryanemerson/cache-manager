@@ -8,3 +8,4 @@ on:
 jobs:
   image:
     uses: ./.github/workflows/publish-images.yaml
+    secrets: inherit
