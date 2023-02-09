@@ -33,6 +33,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           repository: ${{ inputs.repository }}
+          submodules: recursive
 
       - id: meta
         run: |
