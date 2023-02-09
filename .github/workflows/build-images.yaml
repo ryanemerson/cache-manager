@@ -37,7 +37,7 @@ jobs:
 
       - id: meta
         run: |
-          echo "names='mysql postgres mssql oracle'" >> $GITHUB_OUTPUT
+          echo "names=mysql postgres mssql oracle" >> $GITHUB_OUTPUT
           echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx

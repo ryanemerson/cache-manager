@@ -31,6 +31,7 @@ jobs:
       - name: Load and Push images
         # Use same tag value as passed to image job
         run: |
+          set -x
           for i in ${{ needs.images.outputs.image-names }}; do \
             docker load --input $i/$i.tar; \
             docker push quay.io/gingersnap/cache-manager-$i:${{ needs.images.outputs.image-tag }}; \
