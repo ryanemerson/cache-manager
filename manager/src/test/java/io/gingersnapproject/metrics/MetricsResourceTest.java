@@ -19,6 +19,8 @@ import java.util.Map;
 
 import static io.gingersnapproject.metrics.micrometer.CacheManagerMicrometerMetrics.*;
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.hamcrest.CoreMatchers.containsString;
 
 @QuarkusTest
@@ -50,20 +52,20 @@ public class MetricsResourceTest {
       assertGaugeMetricsValue(expectedGauge);
 
       // cache remote miss
-      given().when().get(GET_PATH, "airline", "100000").then().statusCode(HttpStatus.SC_NO_CONTENT);
+      given().when().get(GET_PATH, "airline", "100000").then().statusCode(SC_NOT_FOUND);
       expectedCount.put(PerRuleTimerMetric.CACHE_REMOTE_MISS, "1.0");
       expectedGauge.put(PerRuleGaugeMetric.CACHE_SIZE, "2.0");
       assertTimerMetricsValue(expectedCount);
       assertGaugeMetricsValue(expectedGauge);
 
       // cache local miss
-      given().when().get(GET_PATH, "airline", "100000").then().statusCode(HttpStatus.SC_NO_CONTENT);
+      given().when().get(GET_PATH, "airline", "100000").then().statusCode(SC_NOT_FOUND);
       expectedCount.put(PerRuleTimerMetric.CACHE_LOCAL_MISS, "1.0");
       assertTimerMetricsValue(expectedCount);
       assertGaugeMetricsValue(expectedGauge);
 
       // rule is never created, metrics remains the same
-      given().when().get(GET_PATH, "non-existing-rule", "100000").then().statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+      given().when().get(GET_PATH, "non-existing-rule", "100000").then().statusCode(SC_NOT_FOUND);
       assertTimerMetricsValue(expectedCount);
       assertGaugeMetricsValue(expectedGauge);
    }
