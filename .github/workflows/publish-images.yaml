@@ -11,7 +11,7 @@ jobs:
   images:
     uses: ./.github/workflows/build-images.yaml
     with:
-      tag: ${{ input.tag }}
+      tag: ${{ inputs.tag }}
 
   upload:
     needs: images
