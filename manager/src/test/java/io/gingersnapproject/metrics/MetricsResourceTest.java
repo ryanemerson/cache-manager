@@ -109,7 +109,7 @@ public class MetricsResourceTest {
          name += suffix;
       }
       // tags
-      name += "{%s=\"%s\",%s=\"%s\",}".formatted(
+      name += "{%s=\"%s\",%s=\"%s\"}".formatted(
             NAMING_CONVENTION.tagKey(COMPONENT_KEY),
             NAMING_CONVENTION.tagValue(COMPONENT_NAME),
             NAMING_CONVENTION.tagKey(RULE_KEY),
