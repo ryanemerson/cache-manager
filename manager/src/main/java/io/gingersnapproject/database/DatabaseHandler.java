@@ -1,6 +1,5 @@
 package io.gingersnapproject.database;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -10,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.commons.dataconversion.internal.Json;
 import org.slf4j.Logger;
@@ -22,7 +20,6 @@ import io.gingersnapproject.configuration.RuleManager;
 import io.gingersnapproject.database.model.Table;
 import io.gingersnapproject.database.vendor.Vendor;
 import io.quarkus.arc.Priority;
-import io.quarkus.runtime.StartupEvent;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.sqlclient.PreparedQuery;
 import io.vertx.mutiny.sqlclient.Tuple;
