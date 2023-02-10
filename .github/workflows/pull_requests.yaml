@@ -79,3 +79,10 @@ jobs:
         with:
           name: oracle-test-results
           path: ${{ env.TEST_OUTPUT_DIR }}
+
+  e2e:
+    needs: build
+    uses: gingersnap-project/e2e/.github/workflows/e2e.yaml@main
+    with:
+      cache-manager-ref: ${{ github.ref }}
+      cache-manager-repository: ${{ github.repository }}
