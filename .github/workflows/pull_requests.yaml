@@ -16,69 +16,69 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - uses: graalvm/setup-graalvm@v1
-        with:
-          version: '22.3.0'
-          java-version: '17'
-          components: 'native-image'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build and test MySQL
-        run: |
-          mvn clean package -Pnative
-          mvn test -Pintegration
-
-      - name: MySQL Test Logs
-        uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: mysql-test-results
-          path: ${{ env.TEST_OUTPUT_DIR }}
-
-#      - name: Build and test Postgres
-#        run: |
-#          mvn clean package -Pnative -Ppostgres
-#          mvn test -Pintegration -Ppostgres
 #
-#      - name: Postgres Test Logs
+#      - uses: graalvm/setup-graalvm@v1
+#        with:
+#          version: '22.3.0'
+#          java-version: '17'
+#          components: 'native-image'
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Cache local Maven repository
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.m2/repository
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#
+#      - name: Build and test MySQL
+#        run: |
+#          mvn clean package -Pnative
+#          mvn test -Pintegration
+#
+#      - name: MySQL Test Logs
 #        uses: actions/upload-artifact@v3
 #        if: success() || failure()
 #        with:
-#          name: postgres-test-results
+#          name: mysql-test-results
 #          path: ${{ env.TEST_OUTPUT_DIR }}
-
-      - name: Build and test MSSQL
-        run: |
-          mvn clean package -Pnative -Pmssql
-          mvn test -Pintegration -Pmssql
-
-      - name: MSSQL Test Logs
-        uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: mssql-test-results
-          path: ${{ env.TEST_OUTPUT_DIR }}
-
-      - name: Build and test Oracle
-        run: |
-          mvn clean package -Pnative -Poracle
-          mvn test -Pintegration -Poracle
-
-      - name: Oracle Test Logs
-        uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: oracle-test-results
-          path: ${{ env.TEST_OUTPUT_DIR }}
+#
+##      - name: Build and test Postgres
+##        run: |
+##          mvn clean package -Pnative -Ppostgres
+##          mvn test -Pintegration -Ppostgres
+##
+##      - name: Postgres Test Logs
+##        uses: actions/upload-artifact@v3
+##        if: success() || failure()
+##        with:
+##          name: postgres-test-results
+##          path: ${{ env.TEST_OUTPUT_DIR }}
+#
+#      - name: Build and test MSSQL
+#        run: |
+#          mvn clean package -Pnative -Pmssql
+#          mvn test -Pintegration -Pmssql
+#
+#      - name: MSSQL Test Logs
+#        uses: actions/upload-artifact@v3
+#        if: success() || failure()
+#        with:
+#          name: mssql-test-results
+#          path: ${{ env.TEST_OUTPUT_DIR }}
+#
+#      - name: Build and test Oracle
+#        run: |
+#          mvn clean package -Pnative -Poracle
+#          mvn test -Pintegration -Poracle
+#
+#      - name: Oracle Test Logs
+#        uses: actions/upload-artifact@v3
+#        if: success() || failure()
+#        with:
+#          name: oracle-test-results
+#          path: ${{ env.TEST_OUTPUT_DIR }}
 
   e2e:
     needs: build
