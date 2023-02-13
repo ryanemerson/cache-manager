@@ -82,7 +82,7 @@ jobs:
 
   e2e:
     needs: build
-    uses: gingersnap-project/e2e/.github/workflows/e2e.yaml@main
+    uses: ryanemerson/gingersnap-test/.github/workflows/e2e.yaml@main
     with:
       cache-manager-ref: ${{ github.ref }}
       cache-manager-repository: ${{ github.repository }}
