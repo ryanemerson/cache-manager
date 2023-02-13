@@ -1,32 +1,48 @@
-name: Gingersnap cache-manager - Build and publish
+name: Gingersnap cache-manager - Create tag and Publish
+
 
 on:
-  push:
-    tags:
-      - 'v*'
+ workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ${{ github.ref }}
+      repository:
+        type: string
+        default: ${{ github.repository }}
+      tag:
+        type: string
+        default: latest
 
 env:
   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
 jobs:
-  retrieve-tag:
+  tag:
     runs-on: ubuntu-latest
 
-    outputs:
-      tag: ${{ steps.vars.outputs.LATEST_TAG }}
-
     steps:
+      - name: Configure Git
+        run: |
+          git config --global user.name "infinispan-qe-bot"
+          git config --global user.email "q*@infinispan.org"
+
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Get latest tag
-        id: vars
+        with: 
+          ref: ${{ inputs.ref }}
+          repository: ${{ inputs.repository }}
+          
+      - name: Tag the release
         run: |
-          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo LATEST_TAG=$LATEST_TAG >> $GITHUB_OUTPUT
+         git tag -a v${{ inputs.tag }} -m "Release cache-manager:: ${{ inputs.tag }}"
+         git push origin --tags
 
   publish:
-    uses: ./.github/workflows/publish-images.yaml
-    secrets: inherit
-    with:
-      tag: ${{ needs.retrieve-tag.outputs.tag }}
+      needs: tag
+      uses: ./.github/workflows/publish-images.yaml
+      secrets: inherit
+      with:
+        ref: ${{ inputs.ref }}
+        repository: ${{ inputs.repository }}
+        tag: ${{ inputs.tag }}
