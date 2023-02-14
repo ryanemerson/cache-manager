@@ -14,8 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 
 @QuarkusTest
 @QuarkusTestResource(value = DatabaseResourcesLifecyleManager.class)
@@ -60,6 +59,18 @@ public class JoinTest {
       given().queryParam("query", "select * from flight where name = 'BA0666' order by scheduled_time")
             .when().get(RULE_PATH)
             .then().body(containsString("hitCount=1"));
+   }
+
+   @Test
+   public void testMultipleForeignKeys() {
+      cache.put("3", "{\"name\":\"BA0666\", \"scheduled_time\":\"12:00:00\", \"airline_id\": \"1\", \"gate_id\":\"3\", \"origin_id\":\"1\", \"destination_id\":\"2\"}");
+      given()
+              .when()
+              .get(GET_PATH, "flight", "3")
+              .then()
+              .body("airline_id.name", equalTo("British Airways"))
+              .body("origin_id.name", equalTo("Newcastle"))
+              .body("destination_id.name", equalTo("Knock"));
    }
 
    @Test
