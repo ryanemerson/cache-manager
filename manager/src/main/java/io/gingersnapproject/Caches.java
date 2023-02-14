@@ -91,7 +91,7 @@ public class Caches {
                   denormalize = true;
                   String fkId = fkJson.asString();
                   String fkRule = databaseHandler.tableToRuleName(fk.refTable());
-                  builder.add(getOrCreateMap(fkRule).get(fkId).map(Json::read).map(j -> json.set(fkRule, j)));
+                  builder.add(getOrCreateMap(fkRule).get(fkId).map(Json::read).map(j -> json.set(fkColumn, j)));
                }
             }
 

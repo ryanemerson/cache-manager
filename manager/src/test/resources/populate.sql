@@ -13,5 +13,8 @@ insert into gingersnap.gate values (1, 'A1');
 insert into gingersnap.gate values (2, 'A2');
 insert into gingersnap.gate values (3, 'B1');
 
-insert into gingersnap.flight values (1, 'BA1234', '08:30:00', 1, 1);
-insert into gingersnap.flight values (2, 'AF5678', '09:50:00', 2, 2);
+insert into gingersnap.airport values (1, 'Newcastle');
+insert into gingersnap.airport values (2, 'Knock');
+
+insert into gingersnap.flight values (1, 'BA1234', '08:30:00', 1, 1, 1, 2);
+insert into gingersnap.flight values (2, 'AF5678', '09:50:00', 2, 2, 2, 1);
