@@ -76,6 +76,7 @@ jobs:
       - name: Build Oracle
         uses: docker/build-push-action@v3
         with:
+          context: .
           file: manager/src/main/docker/Dockerfile.native-micro-builder
           tags: quay.io/gingersnap/cache-manager-oracle:${{ inputs.tag }}
           outputs: type=docker,dest=/tmp/oracle.tar
