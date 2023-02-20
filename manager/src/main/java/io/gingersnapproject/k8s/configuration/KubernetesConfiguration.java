@@ -17,4 +17,8 @@ public interface KubernetesConfiguration {
 
    @WithDefault("default")
    String namespace();
+
+   @WithDefault("false")
+   @WithName("service-binding-required")
+   boolean serviceBindingRequired();
 }

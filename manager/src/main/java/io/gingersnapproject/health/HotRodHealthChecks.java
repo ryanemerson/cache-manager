@@ -11,7 +11,7 @@ import org.eclipse.microprofile.health.Startup;
 import io.gingersnapproject.HotRodServer;
 import io.quarkus.arc.Arc;
 
-public class HealthChecks {
+public class HotRodHealthChecks {
 
    private static final String SERVER_CHECK_NAME = "HotRod Server";
 
