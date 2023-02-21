@@ -18,7 +18,8 @@ public class ServiceBindingHealthChecks {
     @Singleton
     public static class RootDefined implements HealthCheck {
 
-        private static final boolean SERVICE_BINDING_ROOT_DEFINED = System.getenv("SERVICE_BINDING_ROOT") != null;
+        // Field can't be static, otherwise it is set at native build time
+        private final boolean SERVICE_BINDING_ROOT_DEFINED = System.getenv("SERVICE_BINDING_ROOT") != null;
 
         @Inject
         KubernetesConfiguration config;
