@@ -1,5 +1,6 @@
 package io.gingersnapproject.database;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -113,7 +114,15 @@ public class DatabaseHandler {
                Row row = rowIterator.next();
                Json jsonObject = Json.object();
                for (int i = 0; i < columns; ++i) {
-                  jsonObject.set(row.getColumnName(i), row.getValue(i));
+                  var val = row.getValue(i);
+                  Json json;
+                  try {
+                     json = Json.make(val);
+                  } catch (IllegalArgumentException e) {
+                     // Type is unknown to JSON, so we must use the toString() representation
+                     json = Json.make(val.toString());
+                  }
+                  jsonObject.set(row.getColumnName(i), json);
                }
                return jsonObject.toString();
             });
