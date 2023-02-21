@@ -21,15 +21,23 @@ public class KubernetesClientProducer {
    @Inject
    KubernetesConfiguration configuration;
 
+   private volatile KubernetesClient client;
+
    @Produces
    @LookupUnlessProperty(name = "gingersnap.k8s.lazy-config-map", stringValue = "")
    @LookupUnlessProperty(name = "gingersnap.k8s.eager-config-map", stringValue = "")
    public KubernetesClient kubernetesClient() {
-      log.info("Creating Kubernetes client");
+      if (client == null) {
+         log.info("Creating Kubernetes client");
 
-      ConfigBuilder cb = new ConfigBuilder();
-      return new KubernetesClientBuilder()
-            .withConfig(cb.withNamespace(configuration.namespace()).build())
-            .build();
+         client = new KubernetesClientBuilder()
+                 .withConfig(
+                         new ConfigBuilder()
+                                 .withNamespace(configuration.namespace())
+                                 .build()
+                 )
+                 .build();
+      }
+      return client;
    }
 }
