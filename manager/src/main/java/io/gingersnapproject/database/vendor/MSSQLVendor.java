@@ -109,7 +109,7 @@ public class MSSQLVendor implements Vendor {
     @Override
     public String whereClause(List<String> keys) {
         return IntStream.range(0,keys.size())
-            .mapToObj(index -> keys.get(index)+ " = @p"+ index)
+            .mapToObj(index -> String.format("%s = @P%d", keys.get(index), index+1))
             .collect(Collectors.joining(" AND "));
-    };
+    }
 }
