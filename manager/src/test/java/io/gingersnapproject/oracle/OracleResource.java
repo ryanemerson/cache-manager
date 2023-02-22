@@ -34,7 +34,7 @@ public class OracleResource implements Database {
             .withPassword("password")
             .withCopyFileToContainer(forClasspathResource("oracle/oracle-setup.sql"), "/docker-entrypoint-initdb.d/001_setup.sql")
             .withCopyFileToContainer(forClasspathResource("oracle/populate.sh"), "/docker-entrypoint-initdb.d/002_populate.sh")
-            .withCopyFileToContainer(forClasspathResource("populate.sql"), "/sql/populate.sql");
+            .withCopyFileToContainer(forClasspathResource("oracle/populate.sql"), "/sql/populate.sql");
       db.start();
    }
 

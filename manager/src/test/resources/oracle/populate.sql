@@ -1,3 +1,4 @@
+WHENEVER SQLERROR EXIT SQL.SQLCODE
 insert into gingersnap.customer values (1, 'Jon Doe', 'jd@example.com');
 insert into gingersnap.customer values (3, 'Bob', 'bob@example.com');
 insert into gingersnap.customer values (4, 'Alice', 'alice@example.com');
@@ -16,5 +17,5 @@ insert into gingersnap.gate values (3, 'B1');
 insert into gingersnap.airport values (1, 'Newcastle');
 insert into gingersnap.airport values (2, 'Knock');
 
-insert into gingersnap.flight values (1, 'BA1234', '2017-10-12 08:30:00', 1, 1, 1, 2);
-insert into gingersnap.flight values (2, 'AF5678', '2017-10-20 09:50:00', 2, 2, 2, 1);
+insert into gingersnap.flight values (1, 'BA1234', timestamp '2017-10-12 08:30:00', 1, 1, 1, 2);
+insert into gingersnap.flight values (2, 'AF5678', timestamp '2017-10-20 09:50:00', 2, 2, 2, 1);
