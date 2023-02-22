@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.infinispan.commons.dataconversion.internal.Json;
 import org.infinispan.util.KeyValuePair;
@@ -37,7 +37,7 @@ import io.gingersnapproject.search.IndexingHandler;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.groups.UniJoin;
 
-@Singleton
+@ApplicationScoped
 public class Caches {
    private static final Logger log = LoggerFactory.getLogger(Caches.class);
 

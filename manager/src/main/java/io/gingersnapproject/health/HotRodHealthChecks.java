@@ -1,7 +1,5 @@
 package io.gingersnapproject.health;
 
-import javax.inject.Singleton;
-
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.Liveness;
@@ -11,12 +9,14 @@ import org.eclipse.microprofile.health.Startup;
 import io.gingersnapproject.HotRodServer;
 import io.quarkus.arc.Arc;
 
+import javax.enterprise.context.ApplicationScoped;
+
 public class HotRodHealthChecks {
 
    private static final String SERVER_CHECK_NAME = "HotRod Server";
 
    @Liveness
-   @Singleton
+   @ApplicationScoped
    public static class LivenessCheck implements HealthCheck {
       @Override
       public HealthCheckResponse call() {
@@ -28,7 +28,7 @@ public class HotRodHealthChecks {
    }
 
    @Readiness
-   @Singleton
+   @ApplicationScoped
    public static class ReadinessCheck implements HealthCheck {
       @Override
       public HealthCheckResponse call() {
@@ -40,7 +40,7 @@ public class HotRodHealthChecks {
    }
 
    @Startup
-   @Singleton
+   @ApplicationScoped
    public static class StartupCheck implements HealthCheck {
       @Override
       public HealthCheckResponse call() {

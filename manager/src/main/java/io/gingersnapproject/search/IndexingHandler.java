@@ -2,15 +2,15 @@ package io.gingersnapproject.search;
 
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.gingersnapproject.configuration.Configuration;
 import io.gingersnapproject.configuration.EagerRule;
 import io.smallrye.mutiny.Uni;
 
-@Singleton
+@ApplicationScoped
 public class IndexingHandler {
 
    @Inject

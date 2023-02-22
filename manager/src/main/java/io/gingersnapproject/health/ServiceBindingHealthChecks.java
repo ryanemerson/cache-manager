@@ -6,8 +6,8 @@ import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.Readiness;
 import org.eclipse.microprofile.health.Startup;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 public class ServiceBindingHealthChecks {
 
@@ -15,7 +15,7 @@ public class ServiceBindingHealthChecks {
 
     @Readiness
     @Startup
-    @Singleton
+    @ApplicationScoped
     public static class RootDefined implements HealthCheck {
 
         // Field can't be static, otherwise it is set at native build time
