@@ -1,5 +1,7 @@
 package io.gingersnapproject.configuration;
 
+import java.util.regex.Pattern;
+
 import io.smallrye.config.WithDefault;
 import org.infinispan.commons.dataconversion.internal.Json;
 
@@ -16,7 +18,7 @@ public interface Rule {
         TEXT {
               @Override
               public String[] toArguments(String strValue, String plainSeparator) {
-                    return strValue.split(plainSeparator);
+                    return strValue.split(Pattern.quote(plainSeparator));
               }
         },
         JSON {
