@@ -2,9 +2,9 @@ package io.gingersnapproject;
 
 import java.net.InetSocketAddress;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.infinispan.commons.logging.LogFactory;
 import org.infinispan.server.core.logging.Log;
@@ -20,7 +20,7 @@ import io.netty.channel.ChannelInitializer;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 
-@Singleton
+@ApplicationScoped
 public class HotRodServer {
    static private final Log log = LogFactory.getLog(HotRodServer.class, Log.class);
 
