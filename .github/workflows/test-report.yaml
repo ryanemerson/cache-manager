@@ -35,3 +35,10 @@ jobs:
           name: Oracle Tests
           path: '**/*.xml'
           reporter: java-junit
+
+      - uses: dorny/test-reporter@v1
+        with:
+          artifact: e2e-test-results
+          name: E2E Tests
+          path: '**/*.xml'
+          reporter: java-junit
