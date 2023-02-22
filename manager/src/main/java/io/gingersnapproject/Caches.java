@@ -14,6 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import io.gingersnapproject.configuration.Rule;
 import org.infinispan.commons.dataconversion.internal.Json;
 import org.infinispan.util.KeyValuePair;
 import org.slf4j.Logger;
@@ -72,35 +73,44 @@ public class Caches {
    }
 
    public Uni<String> denormalizedPut(String name, String key, String value) {
-      EagerRule rule = ruleManager.eagerRules().get(name);
-      if (rule != null && rule.expandEntity()) {
-         boolean denormalize = false;
-         Table table = databaseHandler.table(rule.connector().table());
-         if (!table.foreignKeys().isEmpty()) {
-            // We have foreign keys to resolve
-            Json json = Json.read(value);
-            UniJoin.Builder<Object> builder = Uni.join().builder();
-            for (ForeignKey fk : table.foreignKeys()) {
-               // TODO: handle composite fks
-               String fkColumn = fk.columns().get(0);
-               if (json.at(fkColumn) == null)
-                  continue;
+      return denormalize(name, value).chain(denormalizedVal -> put(name, key, denormalizedVal));
+   }
 
-               Json fkJson = json.atDel(fkColumn);
-               if (fkJson != null) {
-                  denormalize = true;
-                  String fkId = fkJson.asString();
-                  String fkRule = databaseHandler.tableToRuleName(fk.refTable());
-                  builder.add(getOrCreateMap(fkRule).get(fkId).map(Json::read).map(j -> json.set(fkColumn, j)));
-               }
-            }
+   public Uni<String> denormalize(String ruleName, String value) {
+      EagerRule rule = ruleManager.eagerRules().get(ruleName);
+      Table table = databaseHandler.table(rule.connector().table());
+      Json json = Json.read(value);
+      if (!rule.expandEntity() || table.foreignKeys().isEmpty())
+         return Uni.createFrom().item(json.toString());
 
-            if (denormalize)
-               return builder.joinAll().andFailFast().chain(() -> put(name, key, json.toString()));
+      boolean denormalize = false;
+      UniJoin.Builder<Json> builder = Uni.join().builder();
+      for (ForeignKey fk : table.foreignKeys()) {
+         // TODO: handle composite fks
+         String fkColumn = fk.columns().get(0);
+         if (json.at(fkColumn) == null)
+            continue;
+
+         Json fkJson = json.atDel(fkColumn);
+         if (fkJson != null) {
+            denormalize = true;
+            String fkId = fkJson.asString();
+            String fkRule = databaseHandler.tableToRuleName(fk.refTable());
+            if (fkRule == null)
+               throw new IllegalStateException(String.format("No eager-rule defined for table '%s', unable to resolve ForeignKey", fk.refTable()));
+
+            var uni = getOrCreateMap(fkRule)
+                    .get(fkId)
+                    .map(Json::read)
+                    .map(j -> json.set(fkColumn, j));
+            builder.add(uni);
          }
       }
-      // Nothing to denormalize
-      return put(name, key, value);
+
+      if (denormalize)
+         return builder.joinAll().andFailFast().chain(() -> Uni.createFrom().item(json.toString()));
+
+      return Uni.createFrom().item(json.toString());
    }
 
    public Uni<String> put(String name, String key, String value) {
@@ -222,15 +232,27 @@ public class Caches {
             .build(new CacheLoader<>() {
                @Override
                public Uni<String> load(String key) {
-                  Uni<String> dbUni = databaseHandler.select(ruleManager.getEagerOrLazyRuleByName(ruleName), key)
-                        // Make sure to use memoize, so that if multiple people subscribe to this it won't cause
-                        // multiple DB lookups
-                        .memoize().indefinitely();
-                  // This will replace the pending Uni from the DB with a UniItem so we can properly size the entry
-                  // Note due to how lazy subscribe works the entry won't be present in the map  yet
-                  dbUni.subscribe()
-                        .with(result -> replace(ruleName, key, dbUni, result), t -> actualRemove(ruleName, key, dbUni));
-                  return dbUni;
+                   // Make sure to use memoize, so that if multiple people subscribe to this it won't cause
+                   // multiple DB lookups
+                   Uni<String> dbUni;
+                   Rule rule = ruleManager.getEagerOrLazyRuleByName(ruleName);
+                   if (rule instanceof EagerRule) {
+                       dbUni = databaseHandler.select(rule, key)
+                               .onItem()
+                               .ifNotNull()
+                               .transformToUni(value -> denormalize(ruleName, value))
+                               .memoize()
+                               .indefinitely();
+                   } else {
+                       dbUni = databaseHandler.select(rule, key)
+                               .memoize()
+                               .indefinitely();
+                   }
+                   // This will replace the pending Uni from the DB with a UniItem so we can properly size the entry
+                   // Note due to how lazy subscribe works the entry won't be present in the map  yet
+                   dbUni.subscribe()
+                           .with(result -> replace(ruleName, key, dbUni, result), t -> actualRemove(ruleName, key, dbUni));
+                   return dbUni;
                }
 
                @Override

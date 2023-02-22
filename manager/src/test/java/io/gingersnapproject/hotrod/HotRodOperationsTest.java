@@ -48,15 +48,12 @@ public class HotRodOperationsTest {
 
    @Test
    public void testGetAll() {
-      Map<String, String> values = new HashMap<>();
-      values.put("key1", "value1");
-      values.put("key3", "value3");
-      values.put("key2", "value3");
-
-      cache.put("key1", "value1");
-      cache.put("key3", "value3");
-      cache.put("key2", "value3");
-
+      var values = Map.of(
+              "key1", "{\"fullname\": \"value1\"}",
+              "key2", "{\"fullname\": \"value2\"}",
+              "key3", "{\"fullname\": \"value3\"}"
+      );
+      cache.putAll(values);
       assertThat(cache.getAll(values.keySet())).isEqualTo(values);
    }
 }
