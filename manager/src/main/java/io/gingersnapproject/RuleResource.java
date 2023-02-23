@@ -1,9 +1,9 @@
 package io.gingersnapproject;
 
 import io.gingersnapproject.configuration.RuleManager;
+import io.gingersnapproject.json.JsonHelper;
 import io.gingersnapproject.mutiny.UniItem;
 import io.gingersnapproject.search.QueryHandler;
-import io.gingersnapproject.search.QueryResult;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -59,8 +59,8 @@ public class RuleResource {
    @GET
    @Operation(summary = "Queries from any of the rules that are indexed")
    @Produces(MediaType.APPLICATION_JSON)
-   public Uni<QueryResult> query(@QueryParam("query") String query) {
-      return queryHandler.query(query);
+   public Uni<String> query(@QueryParam("query") String query) {
+      return JsonHelper.json(queryHandler.query(query));
    }
 
    private void checkRuleExists(String rule) {

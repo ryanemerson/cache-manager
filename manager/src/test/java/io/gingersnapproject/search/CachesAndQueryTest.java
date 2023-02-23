@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -47,7 +46,7 @@ public class CachesAndQueryTest {
       assertThat(result.hitCountExact()).isTrue();
       assertThat(result.hitsExacts()).isTrue();
 
-      List<String> hits = result.hits().subscribe().asStream().collect(Collectors.toList());
+      List<String> hits = result.hits();
       assertThat(hits).containsExactly(originalJohn.toString(), originalMike.toString());
 
       caches.remove(INDEX_NAME, "john").await().indefinitely();
@@ -62,7 +61,7 @@ public class CachesAndQueryTest {
       assertThat(result.hitCountExact()).isTrue();
       assertThat(result.hitsExacts()).isTrue();
 
-      hits = result.hits().subscribe().asStream().collect(Collectors.toList());
+      hits = result.hits();
       assertThat(hits).containsExactly(originalMike.toString());
 
       HashMap<String, String> values = new HashMap<>();
@@ -82,7 +81,7 @@ public class CachesAndQueryTest {
       assertThat(result.hitCountExact()).isTrue();
       assertThat(result.hitsExacts()).isTrue();
 
-      hits = result.hits().subscribe().asStream().collect(Collectors.toList());
+      hits = result.hits();
       assertThat(hits.get(3)).isEqualTo("{\"surname\":\"07\",\"name\":\"03\",\"nick\":\"073\"}");
    }
 }

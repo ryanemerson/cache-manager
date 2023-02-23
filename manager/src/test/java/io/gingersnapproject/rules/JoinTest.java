@@ -63,7 +63,7 @@ public class JoinTest {
             .when().get(RULE_PATH)
             .then().body(stringExtractor);
 
-      assertThat(stringExtractor.result()).contains("hitCount=1");
+      assertThat(stringExtractor.result()).contains("{\"hitCount\":1,\"hitCountExact\":true,\"hits\":[{\"name\":\"BA0666\",\"scheduled_time\":\"12:00:00\",\"airline_id\":{\"iata\":\"BA\",\"name\":\"British Airways\"},\"gate_id\":{\"name\":\"B1\"}}],\"hitsExacts\":true}");
    }
 
    @Test

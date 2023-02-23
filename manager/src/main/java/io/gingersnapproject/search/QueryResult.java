@@ -1,6 +1,6 @@
 package io.gingersnapproject.search;
 
-import io.smallrye.mutiny.Multi;
+import java.util.List;
 
-public record QueryResult(long hitCount, boolean hitCountExact, Multi<String> hits, boolean hitsExacts) {
+public record QueryResult(long hitCount, boolean hitCountExact, List<String> hits, boolean hitsExacts) {
 }
