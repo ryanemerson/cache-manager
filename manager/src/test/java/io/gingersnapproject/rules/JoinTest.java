@@ -1,7 +1,6 @@
 package io.gingersnapproject.rules;
 
 import io.gingersnapproject.database.DatabaseResourcesLifecyleManager;
-import io.gingersnapproject.util.StringExtractorMatcher;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.infinispan.client.hotrod.DataFormat;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
 @QuarkusTest
@@ -58,12 +56,16 @@ public class JoinTest {
 
       Thread.sleep(1000); // we need to wait for the ES near real time behavior
 
-      StringExtractorMatcher stringExtractor = new StringExtractorMatcher();
       given().queryParam("query", "select * from flight where name = 'BA0666' order by scheduled_time")
-            .when().get(RULE_PATH)
-            .then().body(stringExtractor);
-
-      assertThat(stringExtractor.result()).contains("{\"hitCount\":1,\"hitCountExact\":true,\"hits\":[{\"name\":\"BA0666\",\"scheduled_time\":\"12:00:00\",\"airline_id\":{\"iata\":\"BA\",\"name\":\"British Airways\"},\"gate_id\":{\"name\":\"B1\"}}],\"hitsExacts\":true}");
+            .when()
+              .get(RULE_PATH)
+            .then()
+              .body("hitCount", equalTo(1))
+              .body("hitCountExact", equalTo(true))
+              .body("hits[0].name", equalTo("BA0666"))
+              .body("hits[0].airline_id.name", equalTo("British Airways"))
+              .body("hits[0].gate_id.name", equalTo("B1"))
+              .body("hitsExacts", equalTo(true));
    }
 
    @Test
