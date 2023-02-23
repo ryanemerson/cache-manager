@@ -6,8 +6,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import io.gingersnapproject.configuration.Configuration;
 import io.gingersnapproject.configuration.EagerRule;
+import io.gingersnapproject.configuration.RuleManager;
 import io.smallrye.mutiny.Uni;
 
 @ApplicationScoped
@@ -17,10 +17,10 @@ public class IndexingHandler {
    Instance<SearchBackend> searchBackend;
 
    @Inject
-   Configuration configuration;
+   RuleManager ruleManager;
 
    public Uni<String> put(String indexName, String documentId, String jsonString) {
-      EagerRule rule = configuration.eagerRules().get(indexName);
+      EagerRule rule = ruleManager.eagerRules().get(indexName);
       if (rule == null || !rule.queryEnabled()) {
          return Uni.createFrom().nullItem();
       }
@@ -28,7 +28,7 @@ public class IndexingHandler {
    }
 
    public Uni<String> putAll(String indexName, Map<String, String> documents) {
-      EagerRule rule = configuration.eagerRules().get(indexName);
+      EagerRule rule = ruleManager.eagerRules().get(indexName);
       if (rule == null || !rule.queryEnabled()) {
          return Uni.createFrom().nullItem();
       }
@@ -36,7 +36,7 @@ public class IndexingHandler {
    }
 
    public Uni<String> remove(String indexName, String documentId) {
-      EagerRule rule = configuration.eagerRules().get(indexName);
+      EagerRule rule = ruleManager.eagerRules().get(indexName);
       if (rule == null || !rule.queryEnabled()) {
          return Uni.createFrom().nullItem();
       }
