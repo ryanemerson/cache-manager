@@ -1,28 +1,11 @@
 package io.gingersnapproject.database;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.infinispan.commons.dataconversion.internal.Json;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.gingersnapproject.configuration.Rule;
 import io.gingersnapproject.configuration.RuleEvents;
 import io.gingersnapproject.configuration.RuleManager;
 import io.gingersnapproject.database.model.Table;
 import io.gingersnapproject.database.vendor.Vendor;
 import io.quarkus.arc.Priority;
-import io.quarkus.runtime.StartupEvent;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.sqlclient.PreparedQuery;
 import io.vertx.mutiny.sqlclient.Tuple;
@@ -30,24 +13,36 @@ import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowIterator;
 import io.vertx.sqlclient.RowSet;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.infinispan.commons.dataconversion.internal.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@ApplicationScoped
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@Singleton
 public class DatabaseHandler {
    private static final Logger log = LoggerFactory.getLogger(DatabaseHandler.class);
-   @Inject
    RuleManager ruleManager;
-   @Inject
    Pool pool;
-   @Inject
-   @ConfigProperty(name = "quarkus.datasource.db-kind")
-   String dbKind;
    Vendor vendor;
 
    Map<String, Table> tables = Collections.emptyMap();
    Map<String, String> table2rule = Collections.emptyMap();
 
-   void start(@Observes  @Priority(10) StartupEvent ignore) {
-      vendor = Vendor.fromDbKind(dbKind);
+   @Inject
+   DatabaseHandler(RuleManager ruleManager, Pool pool, @ConfigProperty(name = "quarkus.datasource.db-kind") String dbKind) {
+      this.ruleManager = ruleManager;
+      this.pool = pool;
+      this.vendor = Vendor.fromDbKind(dbKind);
       refreshSchema();
    }
 
