@@ -1,25 +1,7 @@
 package io.gingersnapproject.k8s;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
-
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.Resource;
@@ -29,14 +11,27 @@ import io.gingersnapproject.configuration.Connector;
 import io.gingersnapproject.configuration.EagerRule;
 import io.gingersnapproject.configuration.LazyRule;
 import io.gingersnapproject.configuration.RuleManager;
+import io.gingersnapproject.database.DatabaseHandler;
 import io.gingersnapproject.database.vendor.Vendor;
 import io.gingersnapproject.k8s.configuration.KubernetesConfiguration;
 import io.gingersnapproject.proto.api.config.v1alpha1.EagerCacheRuleSpec;
 import io.gingersnapproject.proto.api.config.v1alpha1.LazyCacheRuleSpec;
-import io.quarkus.arc.Priority;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.eclipse.microprofile.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * Creates two informer on k8s configMap for Lazy and Eager Gingersnap rules
@@ -60,7 +55,9 @@ public class CacheRuleInformer {
 
    private static final Logger log = LoggerFactory.getLogger(CacheRuleInformer.class);
 
-   void startWatching(@Observes StartupEvent ignore, Config config) {
+   // We must add the DatabaseHandler as a startup dependency to ensure that the DB metadata is initialized before
+   // any rules are added at runtime
+   void startWatching(@Observes StartupEvent ignore, DatabaseHandler databaseHandler, Config config) {
       log.debug("startWatching(): begin");
       dbKind = config.getValue("quarkus.datasource.db-kind", String.class).toLowerCase();
       if (client.isUnsatisfied()) {
