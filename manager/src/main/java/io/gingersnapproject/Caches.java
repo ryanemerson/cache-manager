@@ -92,7 +92,7 @@ public class Caches {
             continue;
 
          Json fkJson = json.atDel(fkColumn);
-         if (fkJson != null) {
+         if (fkJson != null && !fkJson.isNull()) {
             denormalize = true;
             String fkId = fkJson.asString();
             String fkRule = databaseHandler.tableToRuleName(fk.refTable());
