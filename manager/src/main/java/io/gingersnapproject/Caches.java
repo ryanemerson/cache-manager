@@ -87,7 +87,7 @@ public class Caches {
       UniJoin.Builder<Json> builder = Uni.join().builder();
       for (ForeignKey fk : table.foreignKeys()) {
          // TODO: handle composite fks
-         String fkColumn = fk.columns().get(0);
+         String fkColumn = fk.columns().get(0).name();
          if (json.at(fkColumn) == null)
             continue;
 

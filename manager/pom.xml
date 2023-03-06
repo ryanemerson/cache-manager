@@ -20,6 +20,7 @@
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <protobuf-java-utils.version>3.11.4</protobuf-java-utils.version>
         <org.gingersnap.api.basedir>${project.basedir}/gingersnap-api</org.gingersnap.api.basedir>
+        <version.graphql>20.0</version.graphql>
     </properties>
 
     <dependencies>
@@ -63,6 +64,11 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java</artifactId>
+            <version>${version.graphql}</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>

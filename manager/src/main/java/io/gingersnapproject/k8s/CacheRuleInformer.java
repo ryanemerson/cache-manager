@@ -28,6 +28,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -321,6 +322,16 @@ public class CacheRuleInformer {
                public String table() {
                   return (schemaTable.length == 1) ? schemaTable[0] : schemaTable[1];
                }
+
+               @Override
+               public List<String> keyColumns() {
+                  return eagerRule.getKey().getKeyColumnsList();
+               }
+
+               @Override
+               public List<String> valueColumns() {
+                  return eagerRule.getValue().getValueColumnsList();
+               }
             };
          }
          return connector;
@@ -371,6 +382,7 @@ public class CacheRuleInformer {
                '}';
       }
 
+      // TODO move this logic to DatabaseHandler like wburns PR
       private void buildStatement() {
          StringBuilder sb = new StringBuilder();
          sb.append("SELECT ")

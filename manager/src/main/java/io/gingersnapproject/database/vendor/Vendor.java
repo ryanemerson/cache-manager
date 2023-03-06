@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.gingersnapproject.database.model.Column;
 import io.gingersnapproject.database.model.PrimaryKey;
 import io.gingersnapproject.database.model.Table;
 import io.smallrye.mutiny.Uni;
@@ -17,17 +18,17 @@ import io.vertx.sqlclient.RowSet;
 public interface Vendor {
    static Vendor fromDbKind(String dbKind) {
       return switch (dbKind.toLowerCase()) {
-         case "postgresql":
-         case "pgsql":
-         case "pg":
-            yield new PostgreSQLVendor();
-         case "mssql":
-            yield new MSSQLVendor();
+//         case "postgresql":
+//         case "pgsql":
+//         case "pg":
+//            yield new PostgreSQLVendor();
+//         case "mssql":
+//            yield new MSSQLVendor();
          case "mysql":
          case "mariadb":
             yield new MySQLVendor();
-         case "oracle":
-            yield new OracleVendor();
+//         case "oracle":
+//            yield new OracleVendor();
          default:
             throw new UnsupportedOperationException();
       };
@@ -37,20 +38,20 @@ public interface Vendor {
 
    static PrimaryKey extractPrimaryKey(RowSet<Row> rows) {
       String pkName = null;
-      List<String> pkColumns = new ArrayList<>(2);
+      List<Column> pkColumns = new ArrayList<>(2);
       for (Row row : rows) {
          pkName = row.getString(0);
-         pkColumns.add(row.getString(1));
+         pkColumns.add(new Column(row.getString(1), "TODO"));
       }
       return new PrimaryKey(pkName, pkColumns);
    }
 
    static PrimaryKey extractPrimaryKeyInLowerCase(RowSet<Row> rows) {
       String pkName = null;
-      List<String> pkColumns = new ArrayList<>(2);
+      List<Column> pkColumns = new ArrayList<>(2);
       for (Row row : rows) {
          pkName = row.getString(0).toLowerCase();
-         pkColumns.add(row.getString(1).toLowerCase());
+         pkColumns.add(new Column(row.getString(1).toLowerCase(), "TODO"));
       }
       return new PrimaryKey(pkName, pkColumns);
    }
